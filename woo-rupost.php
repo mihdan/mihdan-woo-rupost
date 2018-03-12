@@ -13,7 +13,7 @@
 /**
  * Plugin Name: Mihdan: Yandex Turbo Feed
  * Plugin URI: https://github.com/mihdan/woo-rupost
- * Description: Плагин генерирует фид для сервиса Яндекс Турбо
+ * Description: Плагин добавляет доставку Почтой России в WooCommerce
  * Version: 1.0.1
  * Author: Mikhail Kobzarev
  * Author URI: https://www.kobzarev.com/

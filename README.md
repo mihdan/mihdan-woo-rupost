@@ -1,2 +1,2 @@
-# woo-ruspost
-WordPress-плагин для добавления доставки Почтой России в WooCommerce
+# Ru Post for WooCommerce
+WordPress-плагин добавляет доставку Почтой России в WooCommerce
