@@ -18,26 +18,13 @@ if ( ! class_exists( 'WC_RU_Post_Shipping_Method' ) ) {
 				'instance-settings', //add options for to edit the settings of your shipping method for a single zone
 				'instance-settings-modal', // редактировать метод доставки в модалке.
 			);
-//					$this->availability       = 'including'; // Доступно для стран ниже
-//					$this->countries          = array(
-//						'RU', // Russia
-//						'CA', // Canada
-//						'DE', // Germany
-//						'GB', // United Kingdom
-//						'IT', // Italy
-//						'ES', // Spain
-//						'HR', // Croatia
-//					);
-
-			$this->title   = $this->get_option( 'title' );
-			$this->enabled = $this->get_option( 'enabled' );
 
 			$this->init();
 
-			//print_r($this->settings['title']);
-
-
+			$this->title   = $this->get_option( 'title' );
+			$this->enabled = $this->get_option( 'enabled' );
 		}
+
 		/**
 		 * Init your settings
 		 *
@@ -53,29 +40,20 @@ if ( ! class_exists( 'WC_RU_Post_Shipping_Method' ) ) {
 			add_action( 'woocommerce_update_options_shipping_' . $this->id, array( $this, 'process_admin_options' ) );
 		}
 
+		/**
+		 * Общие настройки метода доставки
+		 *
+		 * @return string|void
+		 */
 		function init_form_fields() {
 			$this->form_fields = array(
-
-				'enabled' => array(
-					'title'       => __( 'Включён', '' ),
-					'type'        => 'checkbox',
-					'description' => __( 'Включить данный метод доставки', '' ),
-					'default'     => 'yes'
-				),
-
-				'title' => array(
-					'title'       => __( 'Заголовок', '' ),
-					'type'        => 'text',
-					'description' => __( 'Заголовок, отображаемый на сайте для данного метода доставки', '' ),
-					'default'     => __( 'Почта России9', '' ),
-				),
 				'authorization_token' => array(
 					'title'       => __( 'Токен авторизации приложения', '' ),
 					'type'        => 'text',
 					'description' => __( 'По токену API отпределяет приложение, проводит первоначальную проверку и <br />выделяет квоты на использование сервиса.', '' ),
 					'placeholder' => 'Токен можно узнать в настройках личного кабинета',
 				),
-				'authorization_key' => array(
+				'authorization_key'   => array(
 					'title'       => __( 'Ключ авторизации пользователя', '' ),
 					'type'        => 'text',
 					'description' => __( 'Не сохраняйте и не храните ваш пароль к API в текстовых файлах, <br />так как это может привести к его хищению и/или компрометации', '' ),
@@ -84,113 +62,187 @@ if ( ! class_exists( 'WC_RU_Post_Shipping_Method' ) ) {
 			);
 		}
 
+		/**
+		 * Настройки отдельного экземпляра метода доставки
+		 */
 		public function init_instance_form_fields() {
-			$this->instance_form_fields  = array(
-				'title' => array(
-					'title' 		=> __( 'Title', 'rpaefw-post-calc' ),
-					'type' 			=> 'text',
-					'default'		=> __( 'Russian Post', 'rpaefw-post-calc' ),
+			$this->instance_form_fields = array(
+				'title'   => array(
+					'title'   => __( 'Title', 'rpaefw-post-calc' ),
+					'type'    => 'text',
+					'default' => __( 'Russian Post', 'rpaefw-post-calc' ),
 				),
-				'from' => array(
-					'title' 		=> __( 'Оrigin Postcode', 'rpaefw-post-calc' ),
-					'description' 	=> __( '6-digit code of the sender.', 'rpaefw-post-calc' ),
-					'type' 			=> 'number',
+				'from'    => array(
+					'title'       => __( 'Оrigin Postcode', 'rpaefw-post-calc' ),
+					'description' => __( '6-digit code of the sender.', 'rpaefw-post-calc' ),
+					'type'        => 'number',
 				),
 				'addcost' => array(
-					'title' 		=> __( 'Сost', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'Additional flat rate for shipping method. This may be the average value of the package or the cost of fuel, spent on the road to the post;)', 'rpaefw-post-calc' ),
-					'type' 			=> 'number',
-					'default'		=> 0,
+					'title'       => __( 'Сost', 'rpaefw-post-calc' ),
+					'description' => __( 'Additional flat rate for shipping method. This may be the average value of the package or the cost of fuel, spent on the road to the post;)', 'rpaefw-post-calc' ),
+					'type'        => 'number',
+					'default'     => 0,
 				),
-				'type' => array(
-					'title' 		=> __( 'Type', 'rpaefw-post-calc' ),
-					'type' 			=> 'select',
-					'default' 		=> 'ЦеннаяПосылка',
-					'options'		=> array(
-						'ПростаяБандероль'           => __( 'Simple wrapper', 'rpaefw-post-calc' ),
-						'ЗаказнаяБандероль'          => __( 'Custom wrapper', 'rpaefw-post-calc' ),
-						'ЗаказнаяБандероль1Класс'    => __( 'Custom wrapper 1 class', 'rpaefw-post-calc' ),
-						'ЦеннаяБандероль'            => __( 'Valued wrapper', 'rpaefw-post-calc' ),
-						'ПростаяПосылка'             => __( 'Simple Parcel', 'rpaefw-post-calc' ),
-						'ЦеннаяПосылка'              => __( 'Valued parcel', 'rpaefw-post-calc' ),
-						'ЦеннаяАвиаБандероль'        => __( 'Valued avia wrapper', 'rpaefw-post-calc' ),
-						'ЦеннаяАвиаПосылка'          => __( 'Valued avia parcel', 'rpaefw-post-calc' ),
-						'ЦеннаяБандероль1Класс'      => __( 'Valued wrapper 1 class', 'rpaefw-post-calc' ),
-						'EMS'                        => __( 'EMS', 'rpaefw-post-calc' ),
+				'type'    => array(
+					'title'   => __( 'Type', 'rpaefw-post-calc' ),
+					'type'    => 'select',
+					'default' => 'ЦеннаяПосылка',
+					'options' => array(
+						'ПростаяБандероль'        => __( 'Simple wrapper', 'rpaefw-post-calc' ),
+						'ЗаказнаяБандероль'       => __( 'Custom wrapper', 'rpaefw-post-calc' ),
+						'ЗаказнаяБандероль1Класс' => __( 'Custom wrapper 1 class', 'rpaefw-post-calc' ),
+						'ЦеннаяБандероль'         => __( 'Valued wrapper', 'rpaefw-post-calc' ),
+						'ПростаяПосылка'          => __( 'Simple Parcel', 'rpaefw-post-calc' ),
+						'ЦеннаяПосылка'           => __( 'Valued parcel', 'rpaefw-post-calc' ),
+						'ЦеннаяАвиаБандероль'     => __( 'Valued avia wrapper', 'rpaefw-post-calc' ),
+						'ЦеннаяАвиаПосылка'       => __( 'Valued avia parcel', 'rpaefw-post-calc' ),
+						'ЦеннаяБандероль1Класс'   => __( 'Valued wrapper 1 class', 'rpaefw-post-calc' ),
+						'EMS'                     => __( 'EMS', 'rpaefw-post-calc' ),
 
-						'МждМешокМ'                  =>	'Международный мешок М',
-						'МждМешокМАвиа'              =>	'Международный мешок М авиа',
-						'МждМешокМЗаказной'          =>	'Международный мешок М заказной',
-						'МждМешокМАвиаЗаказной'      =>	'Международный мешок М авиа заказной',
+						'МждМешокМ'                  => 'Международный мешок М',
+						'МждМешокМАвиа'              => 'Международный мешок М авиа',
+						'МждМешокМЗаказной'          => 'Международный мешок М заказной',
+						'МждМешокМАвиаЗаказной'      => 'Международный мешок М авиа заказной',
 						'МждБандероль'               => 'Международная бандероль',
 						'МждБандерольАвиа'           => 'Международная авиабандероль',
 						'МждБандерольЗаказная'       => 'Международная бандероль заказная',
 						'МждБандерольАвиаЗаказная'   => 'Международная авиабандероль заказная',
-						'МждМелкийПакет' 		     =>	'Международный мелкий пакет',
-						'МждМелкийПакетАвиа'         =>	'Международный мелкий пакет авиа',
-						'МждМелкийПакетЗаказной'     =>	'Международный мелкий пакет заказной',
-						'МждМелкийПакетАвиаЗаказной' =>	'Международный мелкий пакет авиа заказной',
+						'МждМелкийПакет'             => 'Международный мелкий пакет',
+						'МждМелкийПакетАвиа'         => 'Международный мелкий пакет авиа',
+						'МждМелкийПакетЗаказной'     => 'Международный мелкий пакет заказной',
+						'МждМелкийПакетАвиаЗаказной' => 'Международный мелкий пакет авиа заказной',
 						'МждПосылка'                 => 'Международная посылка',
 						//'МждПосылкаАвиа'             => 'Международная авиапосылка',
 						'EMS_МждДокументы'           => 'ЕMS международное - документы',
-						'EMS_МждТовары'              =>	'ЕMS международное - товары',
-					)
+						'EMS_МждТовары'              => 'ЕMS международное - товары',
+					),
 				),
 
 				'fixedpackvalue' => array(
-					'title' 		=> __( 'Max. Fixed Package Value', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'You can set max. fixed value for some types of departure. By default value equals sum of the order.', 'rpaefw-post-calc'),
-					'type' 			=> 'number',
+					'title'       => __( 'Max. Fixed Package Value', 'rpaefw-post-calc' ),
+					'description' => __( 'You can set max. fixed value for some types of departure. By default value equals sum of the order.', 'rpaefw-post-calc' ),
+					'type'        => 'number',
 				),
 
 				// Packaging
-				'addpackweight' => array(
-					'title' 		=> __( 'Packaging', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'Weight of the one packaging in grams. This weight will be added to the total weight of the order.', 'rpaefw-post-calc'),
-					'type' 			=> 'number',
-					'default'		=> 0,
+				'addpackweight'  => array(
+					'title'       => __( 'Packaging', 'rpaefw-post-calc' ),
+					'description' => __( 'Weight of the one packaging in grams. This weight will be added to the total weight of the order.', 'rpaefw-post-calc' ),
+					'type'        => 'number',
+					'default'     => 0,
 				),
-				'addpackcost' => array(
-					'description' 	=> __( 'Cost of the one packaging. This cost will be added to the final amount of delivery.', 'rpaefw-post-calc'),
-					'type' 			=> 'number',
-					'default'		=> 0,
+				'addpackcost'    => array(
+					'description' => __( 'Cost of the one packaging. This cost will be added to the final amount of delivery.', 'rpaefw-post-calc' ),
+					'type'        => 'number',
+					'default'     => 0,
 				),
 
 				'fixedvalue_disable' => array(
-					'title' 		=> __( 'Min. cost of order', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'Disable this method if the cost of the order is less than inputted value. Leave this field empty to allow any order cost.', 'rpaefw-post-calc'),
-					'type' 			=> 'number',
+					'title'       => __( 'Min. cost of order', 'rpaefw-post-calc' ),
+					'description' => __( 'Disable this method if the cost of the order is less than inputted value. Leave this field empty to allow any order cost.', 'rpaefw-post-calc' ),
+					'type'        => 'number',
 				),
 
 				'overweight_disable' => array(
-					'title' 		=> __( 'Do not allow overweight', 'rpaefw-post-calc' ),
-					'type' 			=> 'checkbox',
-					'label' 		=> __( 'Disable this method in case of overweight.', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'Hide this method if package weight is heavier than the allowed weight for a chosen type of departure. By default, if there is overweight the package will be split into two or more packages.', 'rpaefw-post-calc' ),
-					'default' 		=> 'no',
+					'title'       => __( 'Do not allow overweight', 'rpaefw-post-calc' ),
+					'type'        => 'checkbox',
+					'label'       => __( 'Disable this method in case of overweight.', 'rpaefw-post-calc' ),
+					'description' => __( 'Hide this method if package weight is heavier than the allowed weight for a chosen type of departure. By default, if there is overweight the package will be split into two or more packages.', 'rpaefw-post-calc' ),
+					'default'     => 'no',
 				),
 
 				// Message options
-				'overweight' => array(
-					'title' 		=> __( 'Notice of overweight', 'rpaefw-post-calc' ),
-					'type' 			=> 'checkbox',
-					'label' 		=> __( 'Show a notice about overweight.', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'Show a message to the customer if the total weight of the order exceeds the permitted weight for specific type of delivery', 'rpaefw-post-calc' ),
-					'default' 		=> 'no',
+				'overweight'         => array(
+					'title'       => __( 'Notice of overweight', 'rpaefw-post-calc' ),
+					'type'        => 'checkbox',
+					'label'       => __( 'Show a notice about overweight.', 'rpaefw-post-calc' ),
+					'description' => __( 'Show a message to the customer if the total weight of the order exceeds the permitted weight for specific type of delivery', 'rpaefw-post-calc' ),
+					'default'     => 'no',
 				),
-				'overweighttext' => array(
-					'type' 			=> 'textarea',
-					'default'		=> 'превышен максимально допустимый вес. В случае выбора данного метода Ваш заказ будет разбит на несколько отправлений.',
+				'overweighttext'     => array(
+					'type'    => 'textarea',
+					'default' => 'превышен максимально допустимый вес. В случае выбора данного метода Ваш заказ будет разбит на несколько отправлений.',
 				),
 
 				'time' => array(
-					'title' 		=> __( 'Delivery Time', 'rpaefw-post-calc' ),
-					'type' 			=> 'checkbox',
-					'label' 		=> __( 'Show time of delivery.', 'rpaefw-post-calc' ),
-					'description' 	=> __( 'Displayed next to the title. For international shipments, it works only for EMS - international.', 'rpaefw-post-calc' ),
-					'default' 		=> 'no',
+					'title'       => __( 'Delivery Time', 'rpaefw-post-calc' ),
+					'type'        => 'checkbox',
+					'label'       => __( 'Show time of delivery.', 'rpaefw-post-calc' ),
+					'description' => __( 'Displayed next to the title. For international shipments, it works only for EMS - international.', 'rpaefw-post-calc' ),
+					'default'     => 'no',
 				),
 			);
+		}
+
+		/**
+		 * Доступен ли данный метод для выбора в чекауте
+		 *
+		 * @param array $package
+		 *
+		 * @return bool
+		 */
+		public function is_available__( $package = array() ) {
+			foreach ( $package['contents'] as $item_id => $values ) {
+				/** @var WC_Product $_product */
+				$_product = $values['data'];
+				$weight   = $_product->get_weight();
+
+				if ( $weight < 10 ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public function calculate_shipping__( $package = array() ) {
+			//get the total weight and dimensions
+			$weight     = 0;
+			$dimensions = 0;
+			foreach ( $package['contents'] as $item_id => $values ) {
+				$_product   = $values['data'];
+				$weight     = $weight + $_product->get_weight() * $values['quantity'];
+				$dimensions = $dimensions + ( ( $_product->length * $values['quantity'] ) * $_product->width * $_product->height );
+
+			}
+
+			//calculate the cost according to the table
+			switch ( $weight ) {
+				case ( $weight < 1 ):
+					switch ( $dimensions ) {
+						case ( $dimensions <= 1000 ):
+							$cost = 3;
+							break;
+						case ( $dimensions > 1000 ):
+							$cost = 4;
+							break;
+					}
+					break;
+				case ( $weight >= 1 && $weight < 3 ):
+					switch ( $dimensions ) {
+						case ( $dimensions <= 3000 ):
+							$cost = 10;
+							break;
+					}
+					break;
+				case ( $weight >= 3 && $weight < 10 ):
+					switch ( $dimensions ) {
+						case ( $dimensions <= 5000 ):
+							$cost = 25;
+							break;
+						case ( $dimensions > 5000 ):
+							$cost = 50;
+							break;
+					}
+					break;
+
+			}
+			// send the final rate to the user.
+			$this->add_rate( array(
+				'id'    => $this->id,
+				'label' => $this->title,
+				'cost'  => $cost,
+			) );
 		}
 
 		/**
@@ -202,9 +254,9 @@ if ( ! class_exists( 'WC_RU_Post_Shipping_Method' ) ) {
 		 */
 		public function calculate_shipping( $package = array() ) {
 			$rate = array(
-				'id' => $this->id,
+				'id'    => $this->id,
 				'label' => $this->title,
-				'cost' => '100.99',
+				'cost'  => '100.99',
 				//'calc_tax' => 'per_item'
 			);
 			// Register the rate
