@@ -7,6 +7,9 @@ php:
 # on_failure: always
 
 before_script:
+ # Set up WordPress installation.
+ - export WP_DEVELOP_DIR=/tmp/wordpress/
+ - mkdir -p $WP_DEVELOP_DIR
  # Install CodeSniffer for WordPress Coding Standards checks.
  - mkdir php-codesniffer && curl -L https://github.com/squizlabs/PHP_CodeSniffer/archive/master.tar.gz | tar xz --strip-components=1 -C php-codesniffer
  # Install WordPress Coding Standards.
@@ -16,3 +19,5 @@ before_script:
  # Set install path for WordPress Coding Standards
  # @link https://github.com/squizlabs/PHP_CodeSniffer/blob/4237c2fc98cc838730b76ee9cee316f99286a2a7/CodeSniffer.php#L1941
  - scripts/phpcs --config-set installed_paths ../wordpress-coding-standards
+script:
+- $WP_DEVELOP_DIR/php-codesniffer/scripts/phpcs -p -s -v -n . --standard=./codesniffer.ruleset.xml --extensions=php
