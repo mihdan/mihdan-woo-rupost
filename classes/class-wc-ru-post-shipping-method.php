@@ -66,6 +66,7 @@ if ( ! class_exists( 'WC_RU_Post_Shipping_Method' ) ) {
 		 * Настройки отдельного экземпляра метода доставки
 		 */
 		public function init_instance_form_fields() {
+
 			$this->instance_form_fields = array(
 				'title'   => array(
 					'title'   => __( 'Title', 'rpaefw-post-calc' ),
