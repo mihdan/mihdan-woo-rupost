@@ -7,6 +7,7 @@
  * @link      https://github.com/mihdan/mihdan-woo-rupost
  * @link      https://code.tutsplus.com/tutorials/create-a-custom-shipping-method-for-woocommerce--cms-26098
  * @link      https://github.com/appwilio/russianpost-sdk
+ * @link      https://github.com/woocommerce/woocommerce/wiki/Shipping-Method-API
  * @copyright Copyright (c) 2017
  * @license   GPL-2.0+
  * @wordpress-plugin
