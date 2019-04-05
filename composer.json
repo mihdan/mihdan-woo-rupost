@@ -1,0 +1,20 @@
+{
+    "name": "mihdan/mihdan-woo-rupost",
+    "description": "Плагин добавляет доставку Почтой России в WooCommerce",
+    "type": "wordpress-plugin",
+    "require": {
+        "lapaygroup/russianpost": "^0.4.10"
+    },
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Mikhail Kobzarev",
+            "email": "mikhail@kobzarev.com",
+            "homepage": "https://www.kobzarev.com/"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/mihdan/mihdan-woo-rupost/issues/new"
+    },
+    "minimum-stability": "beta"
+}
